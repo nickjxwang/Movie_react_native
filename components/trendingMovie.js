@@ -6,7 +6,8 @@ import { useNavigation } from '@react-navigation/native'
 let { width, height } = Dimensions.get('window')
 const TrendingMovie = ({ data }) => {
     const navigation = useNavigation()
-    const handlerClick = () => {
+
+    const handlerClick = item => {
         navigation.navigate('Movie', item)
     }
 

@@ -14,7 +14,7 @@ import {
 import { styles } from '../theme'
 
 import { useState } from 'react'
-import TrendingMovie from '../components/trendingMovie'
+import TrendingMovie from '../components/TrendingMovie'
 import MovieList from '../components/MovieList'
 
 const ios = Platform.OS === 'ios'

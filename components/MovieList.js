@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 
 let { width, height } = Dimensions.get('window')
 
-const MovieList = ({ title, data }) => {
+const MovieList = ({ title, data, hideSeeAll }) => {
     let movieName = 'Ant-man and the Wasp: Quantumania'
     const navigation = useNavigation()
     return (
@@ -20,9 +20,11 @@ const MovieList = ({ title, data }) => {
             <View className='flex-row items-center justify-between mx-4'>
                 <Text className='text-xl text-white'>{title}</Text>
                 <TouchableOpacity>
-                    <Text style={styles.text} className='text-xl'>
-                        See All
-                    </Text>
+                    {!hideSeeAll && (
+                        <Text style={styles.text} className='text-xl'>
+                            See All
+                        </Text>
+                    )}
                 </TouchableOpacity>
             </View>
 
@@ -35,7 +37,7 @@ const MovieList = ({ title, data }) => {
                     return (
                         <TouchableWithoutFeedback
                             key={index}
-                            onPress={() => navigation.navigate('Movie', item)}
+                            onPress={() => navigation.push('Movie', item)}
                         >
                             <View className='mr-4 space-y-1'>
                                 <Image

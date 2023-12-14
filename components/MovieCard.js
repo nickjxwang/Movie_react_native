@@ -7,9 +7,10 @@ import {
 } from 'react-native'
 
 let { width, height } = Dimensions.get('window')
+
 const MovieCard = ({ item, handlerClick }) => {
     return (
-        <TouchableWithoutFeedback onPress={handlerClick}>
+        <TouchableWithoutFeedback onPress={() => handlerClick(item)}>
             <Image
                 source={require('../assets/images/moviePoster1.png')}
                 style={{ width: width * 0.6, height: height * 0.4 }}
