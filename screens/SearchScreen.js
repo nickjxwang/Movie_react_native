@@ -12,11 +12,14 @@ import {
     Dimensions,
 } from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
+import Loading from '../components/Loading'
 
 let { width, height } = Dimensions.get('window')
 const SearchScreen = () => {
     const navigation = useNavigation()
     const [results, setResults] = useState([1, 2, 3, 4, 5])
+    const [loading, setLoading] = useState(false)
+
     let movieName = 'Ant-man and the Wasp: Quantumania'
 
     return (
@@ -34,15 +37,18 @@ const SearchScreen = () => {
                     <XMarkIcon size='20' color='white' />
                 </TouchableOpacity>
             </View>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 15 }}
-                className='space-y-3'
-            >
-                <Text className='ml-1 font-semibold text-white'>
-                    Results ({results.length})
-                </Text>
-                {results.length > 0 ? (
+
+            {loading ? (
+                <Loading />
+            ) : results.length > 0 ? (
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 15 }}
+                    className='space-y-3'
+                >
+                    <Text className='ml-1 font-semibold text-white'>
+                        Results ({results.length})
+                    </Text>
                     <View className='flex-row flex-wrap justify-between'>
                         {results.map((item, index) => {
                             return (
@@ -71,15 +77,15 @@ const SearchScreen = () => {
                             )
                         })}
                     </View>
-                ) : (
-                    <View className='flex-row justify-center'>
-                        <Image
-                            source={require('../assets/images/movieTime.png')}
-                            className='w-96 h-96'
-                        />
-                    </View>
-                )}
-            </ScrollView>
+                </ScrollView>
+            ) : (
+                <View className='flex-row justify-center'>
+                    <Image
+                        source={require('../assets/images/movieTime.png')}
+                        className='w-96 h-96'
+                    />
+                </View>
+            )}
         </SafeAreaView>
     )
 }
