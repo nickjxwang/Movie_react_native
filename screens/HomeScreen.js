@@ -16,9 +16,11 @@ import { styles } from '../theme'
 import { useState } from 'react'
 import TrendingMovie from '../components/TrendingMovie'
 import MovieList from '../components/MovieList'
+import { useNavigation } from '@react-navigation/native'
 
 const ios = Platform.OS === 'ios'
 const HomeScreen = () => {
+    const navigation = useNavigation()
     const [trending, setTrending] = useState([1, 2, 3])
     const [upcoming, setUpcoming] = useState([1, 2, 3])
     const [topRated, setTopRated] = useState([1, 2, 3])
@@ -35,7 +37,9 @@ const HomeScreen = () => {
                     <Text className='text-3xl font-bold text-white'>
                         <Text style={styles.text}>M</Text>ovie
                     </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Search')}
+                    >
                         <MagnifyingGlassIcon
                             size='30'
                             strokewidth={2}
