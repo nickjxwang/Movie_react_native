@@ -3,21 +3,45 @@ import { Dimensions, TouchableOpacity } from 'react-native'
 import { View, Text, ScrollView, SafeAreaView } from 'react-native'
 import { styles } from '../theme'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { HeartIcon } from 'react-native-heroicons/solid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MovieList from '../components/MovieList'
 import Loading from '../components/Loading'
+import {
+    fallbackPersonImage,
+    fetchPersonDetails,
+    fetchPersonMovies,
+    image342,
+} from '../api/moviedb'
 
 let { width, height } = Dimensions.get('window')
 const ios = Platform.OS === 'ios'
 const verticalMargin = ios ? '' : 'my-3'
 
 const PersonScreen = () => {
+    const { params: item } = useRoute()
     const navigation = useNavigation()
     const [isFavorite, setIsFavorite] = useState(false)
-    const [personMovies, setPersonMovies] = useState([1, 2, 3, 4, 5])
-    const [loading, setLoading] = useState(false)
+    const [personMovies, setPersonMovies] = useState([])
+    const [person, setPerson] = useState({})
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        getPersonDetails(item.id)
+        getPersonMovies(item.id)
+        setLoading(false)
+    }, [item])
+
+    const getPersonDetails = async id => {
+        const data = await fetchPersonDetails(id)
+        if (data) setPerson(data)
+    }
+
+    const getPersonMovies = async id => {
+        const data = await fetchPersonMovies(id)
+        if (data && data.cast) setPersonMovies(data.cast)
+    }
 
     return (
         <ScrollView
@@ -61,7 +85,12 @@ const PersonScreen = () => {
                     >
                         <View className='items-center overflow-hidden border-2 rounded-full h-72 w-72 border-neutral-500'>
                             <Image
-                                source={require('../assets/images/castImage1.png')}
+                                // source={require('../assets/images/castImage1.png')}
+                                source={{
+                                    url:
+                                        image342(person?.profile_path) ||
+                                        fallbackPersonImage,
+                                }}
                                 style={{
                                     height: height * 0.43,
                                     width: width * 0.74,
@@ -71,10 +100,10 @@ const PersonScreen = () => {
                     </View>
                     <View className='mt-6'>
                         <Text className='text-3xl font-bold text-center text-white'>
-                            Keanu Reeves
+                            {person?.name}
                         </Text>
                         <Text className='text-base text-center text-neutral-500'>
-                            London, United Kingdom
+                            {person?.place_of_birth}
                         </Text>
                     </View>
                     <View className='flex-row items-stretch justify-between p-4 mx-3 mt-6 rounded-full bg-neutral-700'>
@@ -83,7 +112,7 @@ const PersonScreen = () => {
                                 Gender
                             </Text>
                             <Text className='text-sm text-neutral-300'>
-                                Male
+                                {person?.gender === 1 ? 'Female' : 'Male'}
                             </Text>
                         </View>
                         <View className='items-center px-2 border-r-2 border-r-neutral-400'>
@@ -91,7 +120,7 @@ const PersonScreen = () => {
                                 Birthday
                             </Text>
                             <Text className='text-sm text-neutral-300'>
-                                1964-09-02
+                                {person?.birthday}
                             </Text>
                         </View>
                         <View className='items-center px-2 border-r-2 border-r-neutral-400'>
@@ -99,7 +128,7 @@ const PersonScreen = () => {
                                 Known for
                             </Text>
                             <Text className='text-sm text-neutral-300'>
-                                Acting
+                                {person?.known_for_department}
                             </Text>
                         </View>
                         <View className='items-center px-2'>
@@ -107,21 +136,14 @@ const PersonScreen = () => {
                                 Popularity
                             </Text>
                             <Text className='text-sm text-neutral-300'>
-                                84.23 %
+                                {person?.popularity?.toFixed(2)} %
                             </Text>
                         </View>
                     </View>
                     <View className='mx-4 my-6 space-y-2'>
                         <Text className='text-lg text-white'>Biography</Text>
                         <Text className='tracking-wide text-neutral-400'>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Perferendis voluptatem fuga quisquam nihil
-                            consequuntur eligendi ullam ab aliquid ut fugiat
-                            maiores dolor nam enim nisi sapiente corrupti,
-                            quaerat quos blanditiis veniam tempore laudantium
-                            labore porro eaque atque! Ab eaque, tempora
-                            distinctio est esse facere, cum quis vero magni
-                            placeat deserunt?
+                            {person?.biography || 'N/A'}
                         </Text>
                     </View>
                     <MovieList

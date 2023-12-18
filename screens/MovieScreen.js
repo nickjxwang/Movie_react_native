@@ -102,9 +102,9 @@ const MovieScreen = () => {
                         <Image
                             // source={require('../assets/images/moviePoster2.png')}
                             source={{
-                                url: image500(
-                                    movie?.poster_path || fallbackMoviePoster
-                                ),
+                                url:
+                                    image500(movie?.poster_path) ||
+                                    fallbackMoviePoster,
                             }}
                             style={{ width, height: height * 0.55 }}
                         />
@@ -160,13 +160,17 @@ const MovieScreen = () => {
                 </Text>
             </View>
 
-            <Cast navigation={navigation} cast={cast} />
+            {movie?.id && cast.length > 0 && (
+                <Cast navigation={navigation} cast={cast} />
+            )}
 
-            <MovieList
-                title='Similar Movies'
-                hideSeeAll={true}
-                data={similarMovies}
-            />
+            {movie?.id && similarMovies.length > 0 && (
+                <MovieList
+                    title='Similar Movies'
+                    hideSeeAll={true}
+                    data={similarMovies}
+                />
+            )}
         </ScrollView>
     )
 }
