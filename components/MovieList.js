@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { styles } from '../theme'
 import { useNavigation } from '@react-navigation/native'
+import { fallbackMoviePoster, image185 } from '../api/moviedb'
 
 let { width, height } = Dimensions.get('window')
 
@@ -34,14 +35,20 @@ const MovieList = ({ title, data, hideSeeAll }) => {
                 contentContainerStyle={{ paddingHorizontal: 15 }}
             >
                 {data.map((item, index) => {
+                    4
                     return (
                         <TouchableWithoutFeedback
-                            key={index}
+                            key={item.id}
                             onPress={() => navigation.push('Movie', item)}
                         >
                             <View className='mr-4 space-y-1'>
                                 <Image
-                                    source={require('../assets/images/moviePoster2.png')}
+                                    // source={require('../assets/images/moviePoster2.png')}
+                                    source={{
+                                        url:
+                                            image185(item.poster_path) ||
+                                            fallbackMoviePoster,
+                                    }}
                                     className='rounded-3xl'
                                     style={{
                                         width: width * 0.33,
@@ -49,9 +56,9 @@ const MovieList = ({ title, data, hideSeeAll }) => {
                                     }}
                                 />
                                 <Text className='ml-1 text-neutral-300'>
-                                    {movieName.length > 14
-                                        ? movieName.slice(0, 14) + '...'
-                                        : movieName}
+                                    {item.title.length > 14
+                                        ? item.title.slice(0, 14) + '...'
+                                        : item.title}
                                 </Text>
                             </View>
                         </TouchableWithoutFeedback>

@@ -17,6 +17,13 @@ import { LinearGradient } from 'expo-linear-gradient'
 import Cast from '../components/Cast'
 import MovieList from '../components/MovieList'
 import Loading from '../components/Loading'
+import {
+    fallbackMoviePoster,
+    fetchMovieCredits,
+    fetchMovieDetails,
+    fetchSimilarMovies,
+    image500,
+} from '../api/moviedb'
 
 let { width, height } = Dimensions.get('window')
 const ios = Platform.OS === 'ios'
@@ -26,13 +33,35 @@ const MovieScreen = () => {
     const { params: item } = useRoute()
     const navigation = useNavigation()
     const [isFavorite, setIsFavorite] = useState(false)
-    const [cast, setCast] = useState([1, 2, 3, 4, 5])
-    const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4, 5])
+    const [cast, setCast] = useState([])
+    const [similarMovies, setSimilarMovies] = useState([])
     const [loading, setLoading] = useState(false)
+    const [movie, setMovie] = useState({})
 
     let movieName = 'Ant-man and the Wasp: Quantumania'
 
-    useEffect(() => {}, [item])
+    useEffect(() => {
+        setLoading(true)
+        getDetailsMovie(item.id)
+        getMovieCredits(item.id)
+        getSimilarMovies(item.id)
+    }, [item])
+
+    const getDetailsMovie = async id => {
+        const data = await fetchMovieDetails(id)
+        if (data) setMovie(data)
+        setLoading(false)
+    }
+    const getMovieCredits = async id => {
+        const data = await fetchMovieCredits(id)
+        if (data && data.cast) setCast(data.cast)
+    }
+
+    const getSimilarMovies = async id => {
+        const data = await fetchSimilarMovies(id)
+        if (data && data.results) setSimilarMovies(data.results)
+    }
+
     return (
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20 }}
@@ -71,7 +100,12 @@ const MovieScreen = () => {
                 ) : (
                     <View>
                         <Image
-                            source={require('../assets/images/moviePoster2.png')}
+                            // source={require('../assets/images/moviePoster2.png')}
+                            source={{
+                                url: image500(
+                                    movie?.poster_path || fallbackMoviePoster
+                                ),
+                            }}
                             style={{ width, height: height * 0.55 }}
                         />
                         <LinearGradient
@@ -91,27 +125,38 @@ const MovieScreen = () => {
 
             <View style={{ marginTop: -(height * 0.09) }} className='space-y-3'>
                 <Text className='text-3xl font-bold tracking-widest text-center text-white'>
-                    {movieName}
+                    {movie?.title}
                 </Text>
-                <Text className='text-base font-semibold text-center text-neutral-400'>
-                    Released • 2020 • 170 min
-                </Text>
-                <View className='flex-row justify-center mx-4 space-x-2'>
+
+                {movie?.id ? (
                     <Text className='text-base font-semibold text-center text-neutral-400'>
-                        Action •
+                        {movie?.status} • {movie?.release_date?.split('-')[0]} •{' '}
+                        {movie?.runtime} min
                     </Text>
-                    <Text className='text-base font-semibold text-center text-neutral-400'>
+                ) : null}
+
+                <View className='flex-row justify-center mx-4 space-x-2'>
+                    {movie?.genres?.map((genre, index) => {
+                        let showDot = index + 1 != movie.genres.length
+                        return (
+                            <Text
+                                key={index}
+                                className='text-base font-semibold text-center text-neutral-400'
+                            >
+                                {genre?.name} {showDot ? '•' : null}
+                            </Text>
+                        )
+                    })}
+
+                    {/* <Text className='text-base font-semibold text-center text-neutral-400'>
                         Thrill •
                     </Text>
                     <Text className='text-base font-semibold text-center text-neutral-400'>
                         Comedy
-                    </Text>
+                    </Text> */}
                 </View>
                 <Text className='mx-4 tracking-wide text-neutral-400'>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                    Enim ipsum vitae accusantium molestiae qui porro ea quos
-                    libero, esse eaque iusto totam mollitia, laborum possimus?
-                    Sit, nostrum. Sint, cumque ut!
+                    {movie?.overview}
                 </Text>
             </View>
 
